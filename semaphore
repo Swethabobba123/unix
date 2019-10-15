@@ -1,0 +1,63 @@
+semaphore:
+
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/types.h>
+#include<sys/ipc.h>
+#include<sys/sem.h>
+#include<string.h>
+#include<sys/types.h>
+#include<fcntl.h>
+#define MAXBUFF 32
+#define SEQFILE "sample"
+static struct sembuf op_lock[2]={{0,0,0},{0,1,0}};
+static struct sembuf op_unlock[1]={0,-1,IPC_NOWAIT};
+int semid;
+void my_lock(int fd){
+        if(semop(semid,&op_lock[0],2)<0){
+                perror("semop in my_lock");
+                exit(1);
+        }
+}
+void my_unlock(int fd){
+        if(semop(semid,&op_unlock[0],1)<0){
+                perror("semop in my_unlock");
+                exit(1);
+        }
+}
+int main(){
+        key_t key=5623;
+        int fd,i,n,pid,seqno;
+        char buff[MAXBUFF + 1];
+        if((semid=semget(key,1,IPC_CREAT | 0666))<0){
+                perror("semget");
+                exit(1);
+        }
+        if((fd=open(SEQFILE,O_RDWR))<0){
+                perror("open");
+                exit(1);
+        }
+        for(i=0;i<20;i++){
+                my_lock(fd);
+                lseek(fd,0L,0);
+                if((n=read(fd,buff,MAXBUFF))<=0){
+                        perror("read");
+                        exit(1);
+                }
+                buff[n]='\0';
+                sscanf(buff,"%d\n",&seqno);
+                printf("pid=%d,seqno=%d\n",getpid(),seqno);
+                        seqno++;
+                sprintf(buff,"%03d\n",seqno);
+                n=strlen(buff);
+                lseek(fd,0L,0);
+                if(write(fd,buff,n)!=n){
+                        perror("write");
+                        exit(1);
+                }
+                my_unlock(fd);
+        }
+        exit(0);
+}
