@@ -1,0 +1,18 @@
+zombie:
+
+
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main(){
+        int pid;
+        pid=fork();
+        if(pid==0){
+                printf("child:PID %d : PPID %d \n",getpid(),getppid());
+                exit(0);
+        }
+        else {
+                printf("parent : PID %d : PPID %d \n",getpid(),getppid());
+                sleep(300);
+       }
+}
