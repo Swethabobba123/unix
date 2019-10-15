@@ -1,0 +1,21 @@
+alarm:
+
+#include<stdio.h>
+#include<unistd.h>
+#include<signal.h>
+int alarmFlag=0;
+void alarmHandler();
+int main()
+{
+        signal(SIGALRM,alarmHandler);
+        alarm(3);
+        printf("Looping forever \n");
+        while(!alarmFlag){
+               pause();
+        }
+                printf("This line should never be executed \n");
+           }
+void alarmHandler(){
+        printf("an alarm clock signal was received\n");
+        alarmFlag=1;
+}
