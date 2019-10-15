@@ -1,0 +1,18 @@
+critical:
+
+
+#include <stdio.h>
+#include<unistd.h>
+#include<signal.h>
+int main(){
+         void (*oldHandler) ();
+         printf("I can be Control-Ced \n");
+         sleep(3);
+         oldHandler = signal(SIGINT, SIG_IGN);
+         printf("Im protected from Control-C now\n");
+         sleep(3);
+         signal(SIGINT, oldHandler);
+        printf("I can be Control-Ced again \n");
+        sleep(3);
+        printf("Bye! \n");
+}
