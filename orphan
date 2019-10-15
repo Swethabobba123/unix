@@ -1,0 +1,23 @@
+orphan:
+
+
+#include<stdio.h>
+#include<unistd.h>
+int main()
+{
+        int pid;
+        printf("iam the original process with pid%d and ppid %d\n",getpid(),getp
+pid());
+        pid=fork();
+        if(pid!=0)
+        {
+                printf("iam the parent ,my process id is %d\n",getpid());
+                printf("the parents parent process id is %d\n",getppid());
+                printf("my child's pid is %d\n",pid);
+        }
+        else {
+                sleep(5);
+                printf("iam the child process with pid%d and ppid%d \n",getpid(),getppid());
+        }
+        printf("pid%d teriminates \n",getpid());
+}
