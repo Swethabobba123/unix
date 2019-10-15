@@ -1,0 +1,33 @@
+limit:
+
+
+#include <stdio.h>
+#include <signal.h>
+#include<unistd.h>
+#include<stdlib.h>
+#include<sys/wait.h>
+#include<stdlib.h>
+int delay;
+void childHandler();
+int main(int argc,char *argv[]){
+        int pid;
+        signal( SIGCHLD, childHandler );
+        pid = fork();
+        if ( pid == 0 ) {
+                execvp( argv[2], &argv[2] );
+                perror("limit");
+        }
+        else
+        {
+                scanf( argv[1], "%d", &delay );
+                sleep(delay);
+                printf("Child %d exceeded limit and is being killed \n", pid );
+                kill( pid, SIGINT );
+        }
+}
+void childHandler() {
+        int childPid, childStatus;
+        childPid = wait(&childStatus);
+     printf("Child %d terminated within %d seconds \n", childPid, delay);
+        exit(0);
+}
